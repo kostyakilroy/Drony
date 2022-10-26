@@ -6,6 +6,7 @@
     </style>
 
     <style name="DialogTheme" parent="Theme.Drony">
+        <item name="android:windowBackground">@android:color/white</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowIsFloating">false</item>

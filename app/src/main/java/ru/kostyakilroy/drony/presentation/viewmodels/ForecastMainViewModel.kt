@@ -1,12 +1,10 @@
 package ru.kostyakilroy.drony.presentation.viewmodels
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ru.kostyakilroy.drony.domain.drone.Quadcopter
 import ru.kostyakilroy.drony.domain.weather.Weather
 import ru.kostyakilroy.drony.domain.location.LocationProvider
 import ru.kostyakilroy.drony.domain.repository.WeatherRepository
@@ -35,6 +33,7 @@ class ForecastMainViewModel @Inject constructor(
     private var _flyConditionsState = MutableStateFlow(FlyConditionsUiState())
     val flyConditionsState: StateFlow<FlyConditionsUiState> = _flyConditionsState.asStateFlow()
 
+    // TODO
     private var _latNlon = MutableStateFlow(LocationState())
     val latNlon: StateFlow<LocationState> = _latNlon.asStateFlow()
 
@@ -43,6 +42,8 @@ class ForecastMainViewModel @Inject constructor(
 //    private val _currentDrone = MutableLiveData<Quadcopter>(defaultDrone)
     private var _currentDrone = defaultDrone
 
+
+    // Получение текущей локации и загрузка данных из ДБ/API
     fun loadCurrentWeatherData() {
         viewModelScope.launch() {
 
@@ -65,14 +66,13 @@ class ForecastMainViewModel @Inject constructor(
         }
     }
 
-    fun getChosenDrone(droneName: String) = droneName
-
+    // Получаем имя дрона из SharedPreferences
     fun setCurrentDrone(droneName: String){
         _currentDrone = currentDroneUseCase.execute(droneName)
     }
 
-
-    fun setChosenDrone(weatherData: Weather) {
+    // Обновляет состояние? полетных условий
+    fun updateFlyConditions(weatherData: Weather) {
         viewModelScope.launch {
             _flyConditionsState.update {
                 it.copy(flyConditions = flyConditionsUseCase.execute(weather = weatherData, _currentDrone))
@@ -80,6 +80,8 @@ class ForecastMainViewModel @Inject constructor(
         }
     }
 
+
+    // Получение и загрузка данных из ДБ/API на основе полученной ранее локации
     private fun getHourlyWeather(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             repository.getHourlyWeather(latitude, longitude).onEach { result ->

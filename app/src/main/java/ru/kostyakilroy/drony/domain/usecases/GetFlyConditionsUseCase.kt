@@ -5,6 +5,8 @@ import ru.kostyakilroy.drony.domain.drone.Quadcopter
 import ru.kostyakilroy.drony.domain.weather.Weather
 import ru.kostyakilroy.drony.domain.drone.FlyConditionsCode
 
+// Высчтивает на сколько полученные данные подходят для полёта
+
 class GetFlyConditionsUseCase {
     fun execute(weather: Weather?, quadcopter: Quadcopter): FlyConditions {
         return if (weather == null) {

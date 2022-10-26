@@ -7,6 +7,8 @@ import ru.kostyakilroy.drony.domain.weather.Weather
 import ru.kostyakilroy.drony.domain.weather.WeatherType
 import java.time.ZonedDateTime
 
+// Сущность базы данных в сущность domain
+
 fun HourlyWeather.toWeather(): Weather {
     return Weather(
         startTime = startTime,
@@ -19,6 +21,8 @@ fun HourlyWeather.toWeather(): Weather {
         weatherType = WeatherType.fromCodeToWeatherType(weatherCode)
     )
 }
+
+// Список полученных значений после API запроса в список сущностей базы данных
 
 fun Timeline.toHourlyWeatherList(): List<HourlyWeather> {
     return this.intervals.mapIndexed { index, interval ->
@@ -35,6 +39,8 @@ fun Timeline.toHourlyWeatherList(): List<HourlyWeather> {
         )
     }
 }
+
+// Значение полученное после API запроса в сущность базы данных
 
 fun Interval.toHourlyWeather(): HourlyWeather {
     return HourlyWeather (

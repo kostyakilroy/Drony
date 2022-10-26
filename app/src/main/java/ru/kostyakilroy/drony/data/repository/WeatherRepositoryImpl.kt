@@ -25,9 +25,16 @@ class WeatherRepositoryImpl @Inject constructor(
         longitude: Double
     ): Flow<Resource<List<Weather>>> = flow {
 
+        // Получаем данные из ДБ
+
+
         val hourlyWeather = dao.loadAllHourlyWeather()
 
-        if (hourlyWeather.isNotEmpty()) emit(Resource.Loading(data = hourlyWeather.map { it.toWeather() }))
+//        if (hourlyWeather.isNotEmpty()) emit(Resource.Loading(data = hourlyWeather.map { it.toWeather() }))
+
+        // Если данных нет или TimeStamp второго значения из ДБ меньше текущего времени,
+        // то делаем API запрос, удаляем старые сущности из БД и добавляем полученные данные.
+        // Полученный результат отправляем во ViewModel
 
         if (isReasonToInsert(hourlyWeather)) {
             try {
@@ -49,10 +56,14 @@ class WeatherRepositoryImpl @Inject constructor(
                     message = e.message
                 ))
             }
+        } else { // Если данные есть то отправляем во ViewModel
+            emit(Resource.Success(data = hourlyWeather.map { it.toWeather() }))
         }
 
-        val newHourlyWeather = dao.loadAllHourlyWeather()
-        if (newHourlyWeather.isNotEmpty()) emit(Resource.Success(data = newHourlyWeather.map { it.toWeather() }))
+
+
+//        val newHourlyWeather = dao.loadAllHourlyWeather()
+//        if (newHourlyWeather.isNotEmpty()) emit(Resource.Success(data = newHourlyWeather.map { it.toWeather() }))
     }
 
     private fun isReasonToInsert(weatherList: List<HourlyWeather>): Boolean {

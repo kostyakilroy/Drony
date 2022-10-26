@@ -63,12 +63,16 @@ class ForecastMainFragment : Fragment() {
 
         preferences = requireContext().getSharedPreferences(DRONE_PREF, Context.MODE_PRIVATE)
 
+        // TODO
+        // Получение имя дрона из SharedPreferences
+        // Обновления текущего дрона во ViewModel
         val chosenDrone = preferences.getString(CHOSEN_DRONE, DJIQuadcopters.AIR2S.name)
         val drone = DJIQuadcopters.valueOf(chosenDrone ?: DJIQuadcopters.AIR2S.name)
         viewModel.setCurrentDrone(chosenDrone ?: DJIQuadcopters.AIR2S.name)
         binding.fcMainDroneName.text = getString(drone.quadcopter.name)
 
 
+        // Загрузка данных во ViewModel
         permissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) {
@@ -80,27 +84,35 @@ class ForecastMainFragment : Fragment() {
             Manifest.permission.ACCESS_COARSE_LOCATION,
         ))
 
+        // Получение данных из ViewModel
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
                     binding.apply {
 
+                        // Скрыть "таблички" с информацией( temp, wind, etc)
                         weatherCards.fcCardsGroup.visibility = if (uiState.isLoading || uiState.error != null) View.INVISIBLE else View.VISIBLE
+                        // Показать/скрыть прогрессбар
                         fcMainErrorContainer.progressCircular.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
+
                         if (uiState.weatherInfo != null) {
                             val weatherData =  uiState.weatherInfo.first()
 
+                            // Установка иконки и наименования текущей погоды
                             fcMainAnimationContainerWeather.setImageResource(weatherData.weatherType.iconRes)
                             fcMainAnimationContainerWeatherType.text = weatherData.weatherType.typeName
 
+                            // Обновить информацию в "таблчиках"
                             updateWeatherCardValues(weatherData)
 
                             // todo add cancellation
+                            // Обновляет текущий дрон и условия для полёта во ViewModel,
+                            // когда в ChooseDroneDialog пользователь выбирает новый дрон
                             preferences.registerOnSharedPreferenceChangeListener{ prf, key ->
                                 val currentDrone = preferences.getString(CHOSEN_DRONE, DJIQuadcopters.AIR2S.name)
                                 val drone1 = DJIQuadcopters.valueOf(currentDrone ?: DJIQuadcopters.AIR2S.name)
                                 viewModel.setCurrentDrone(currentDrone ?: DJIQuadcopters.AIR2S.name)
-                                viewModel.setChosenDrone(weatherData)
+                                viewModel.updateFlyConditions(weatherData)
                                 fcMainDroneName.text = getText(drone1.quadcopter.name)
                             }
 
@@ -116,6 +128,8 @@ class ForecastMainFragment : Fragment() {
             }
         }
 
+
+        // Устанавливает имя текущего местоположения в тулбаре
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.latNlon.collect{ latNlon ->
@@ -127,6 +141,7 @@ class ForecastMainFragment : Fragment() {
             }
         }
 
+        // Обновляет цвет "табличек" при выборе нового дрона
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.flyConditionsState.collect{ cond ->
@@ -137,6 +152,7 @@ class ForecastMainFragment : Fragment() {
             }
         }
 
+        // TODO
         binding.fcMainToolbarLastUpdated.text = "Обновлено " + ZonedDateTime.now().format(DateTimeFormatter.ISO_TIME)
 
         binding.fcMainToolbar.setOnMenuItemClickListener {
@@ -168,6 +184,7 @@ class ForecastMainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // TODO
         val navCont = findNavController()
 
         binding.fcMainToolbarContainer.setOnClickListener {
@@ -185,6 +202,8 @@ class ForecastMainFragment : Fragment() {
         _binding = null
     }
 
+    // TODO
+    // Получает название местоположения
     private fun getLocationName(lat: Double, lon: Double): String {
         var geoName = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -198,6 +217,7 @@ class ForecastMainFragment : Fragment() {
         return geoName
     }
 
+    // Диалог показываемый при нажатии на одно из значений
     private fun showWeatherCardExplanationDialog(title: String, explanation: String) {
         val alertDialog = MaterialAlertDialogBuilder(requireContext())
         alertDialog
@@ -209,6 +229,7 @@ class ForecastMainFragment : Fragment() {
             .show()
     }
 
+    // Обновляет значения "табличек" при обновлении данных во ViewModel
     private fun updateWeatherCardValues(weatherData: Weather) {
         binding.apply {
             weatherCards.apply {
@@ -223,6 +244,7 @@ class ForecastMainFragment : Fragment() {
         }
     }
 
+    // Обновляет цвет "табличек" при обновлении данных во ViewModel
     private fun updateWeatherCardConditions(flyConditions: FlyConditions) {
         binding.apply {
             weatherCards.apply {

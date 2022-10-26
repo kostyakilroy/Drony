@@ -36,6 +36,7 @@ class ChooseDroneDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Записывает имя текущего дрона в SharedPreferences
         val currentChosenDrone = preferences.getString(CHOSEN_DRONE,  DJIQuadcopters.AIR2S.name)
 
         binding.chooseDroneRadioGroup.check(
@@ -49,6 +50,7 @@ class ChooseDroneDialog : DialogFragment() {
         binding.toolbar.title = "Choose a drone"
         binding.toolbar.inflateMenu(R.menu.choose_drone)
         binding.toolbar.setOnMenuItemClickListener {
+            // Обновляет имя текущего дрона в SharedPreferences
             when(binding.chooseDroneRadioGroup.checkedRadioButtonId) {
                 R.id.choose_drone_djiair2s -> preferences.edit().putString(CHOSEN_DRONE, DJIQuadcopters.AIR2S.name).apply()
                 R.id.choose_drone_djimavic3 -> preferences.edit().putString(CHOSEN_DRONE, DJIQuadcopters.MAVIC3.name).apply()

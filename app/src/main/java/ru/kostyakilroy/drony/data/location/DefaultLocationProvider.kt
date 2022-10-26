@@ -35,6 +35,10 @@ class DefaultLocationProvider @Inject constructor(
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
+
+        // Если нет разрешений или GPS | Internet выключен вернуть ошибку,
+        // иначе вернуть текущую локацию при помощи короутины
+
         when {
             !hasAccessCoarseLocationPermission -> {
                 return Resource.Error("Нет разрешения на получение приблизительного местоположения")
@@ -72,6 +76,8 @@ class DefaultLocationProvider @Inject constructor(
         }
 
     }
+
+    // Android Location class to domain entity
 
     private fun Location.toSimpleLocation(): SimpleLocation {
         return SimpleLocation(
