@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/forecastMainFragment">
+
+    <fragment
+        android:id="@+id/forecastMainFragment"
+        android:name="ru.kostyakilroy.drony.presentation.ui.ForecastMainFragment"
+        android:label="fragment_forecast_main"
+        tools:layout="@layout/fragment_forecast_main" >
+        <action
+            android:id="@+id/action_forecastMainFragment_to_forecastDetailsFragment"
+            app:destination="@id/forecastDetailsFragment" />
+        <action
+            android:id="@+id/action_forecastMainFragment_to_locationActionDialogFragment"
+            app:destination="@id/locationActionDialogFragment" />
+        <action
+            android:id="@+id/action_forecastMainFragment_to_chooseDroneFragment"
+            app:destination="@id/chooseDroneFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/forecastDetailsFragment"
+        android:name="ru.kostyakilroy.drony.presentation.ui.ForecastDetailsFragment"
+        android:label="fragment_forecast_details"
+        tools:layout="@layout/fragment_forecast_details" >
+        <action
+            android:id="@+id/action_forecastDetailsFragment_to_forecastMainFragment"
+            app:destination="@id/forecastMainFragment"
+            app:popUpTo="@id/forecastMainFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <dialog
+        android:id="@+id/locationActionDialogFragment"
+        android:name="ru.kostyakilroy.drony.presentation.ui.LocationActionDialogFragment"
+        android:label="fragment_loaction_action_dialog"
+        tools:layout="@layout/fragment_loaction_action_dialog" >
+        <action
+            android:id="@+id/action_locationActionDialogFragment_to_forecastMainFragment"
+            app:destination="@id/forecastMainFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/chooseDroneFragment"
+        android:name="ru.kostyakilroy.drony.presentation.ui.ChooseDroneDialog"
+        android:label="fragment_choose_drone"
+        tools:layout="@layout/dialog_choose_drone" />
+</navigation>
